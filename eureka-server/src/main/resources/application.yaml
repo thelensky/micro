@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: eureka-server
+  config:
+    import: optional:configserver:http://localhost:8071
+  cloud:
+    config:
+      retry:
+        initial-interval: 1000   # 1 секунда
+        max-interval: 2000
+        multiplier: 1.5
+        max-attempts: 10
+
+eureka:
+  client:
+    fetch-registry: false
+    register-with-eureka: false
+  instance:
+    hostname: localhost
+  server:
+    wait-time-in-ms-when-sync-empty: 5
+
+server:
+  port: 8070
+

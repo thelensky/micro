@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: organization-service
+  config:
+    import: optional:configserver:http://localhost:8071
+  cloud:
+    config:
+      retry:
+        initial-interval: 1000   # 1 секунда
+        max-interval: 2000
+        multiplier: 1.5
+        max-attempts: 10
+server:
+  port: 8082
+eureka:
+  instance:
+    hostname: ${HOSTNAME}
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${server.port}

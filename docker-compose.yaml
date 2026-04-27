@@ -1,0 +1,94 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: ostock_dev
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  config-server:
+    image: config-server:0.0.1-SNAPSHOT
+    ports:
+      - "8071:8071"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - ENCRYPT_KEY=IMSYMMETRIC
+      - CONFIG_LOCATION=file:///git-repo/{application}
+      - SPRING_CLOUD_BOOTSTRAP_ENABLED=true
+    volumes:
+      - ./config:/git-repo
+    networks:
+      - backend
+
+  eureka-server:
+    image: eureka-server:0.0.1-SNAPSHOT
+    ports:
+      - "8070:8070"
+    restart: on-failure
+    environment:
+      #      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071
+    networks:
+      - backend
+
+  licensing-service:
+    image: licensing-service:0.0.1-SNAPSHOT
+    ports:
+      - "8081:8081"
+      - "5005:5005"
+    restart: on-failure
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
+    networks:
+      - backend
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+      db:
+        condition: service_started
+
+  organization-service:
+    image: organization:0.0.1-SNAPSHOT
+#    ports:
+#      - "8082"
+#      - "5006:5006"
+    restart: on-failure
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 #-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+    networks:
+      - backend
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+      db:
+        condition: service_started
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      device: D:/docker-volumes/postgres-data
+      o: bind

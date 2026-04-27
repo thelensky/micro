@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: config-server
+  profiles:
+    active:
+      - native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: ${CONFIG_LOCATION:classpath:/config}
+
+server:
+  port: 8071
+#encrypt:
+#  key: IMSYMMETRIC
