@@ -20,11 +20,6 @@ public class OrganizationController {
     @RequestMapping(value = "/{organizationId}", method = RequestMethod.GET)
     public ResponseEntity<Organization> getOrganization(@PathVariable("organizationId") String organizationId, HttpServletRequest request) {
         log.info("Request from: {}", request.getRequestURL().toString());
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
         Organization organization = service.findById(organizationId);
         log.info("Organization: {}", organization);
         return ResponseEntity.ok(organization);

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
         path = "/v1/organization/",
         configuration = OrganizationFeignConfig.class,
         fallback = OrganizationFeignClientFallback.class)
-public interface OrganizationFeignClient {
+public interface OrganizationFeignClient extends OrganizationClient {
     @GetMapping(value = "{organizationId}")
     Organization getOrganization(@PathVariable("organizationId") String organizationId);
 }

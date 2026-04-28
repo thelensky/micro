@@ -12,7 +12,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
-public class OrganizationRestTemplateClient {
+public class OrganizationRestTemplateClient implements OrganizationClient {
 
     @Value("${app.service.organization-url}")
     private String organizationUrl;

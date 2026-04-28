@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 
 @Component
-public class OrganizationDiscoveryClient {
+public class OrganizationDiscoveryClient implements OrganizationClient {
     @Value("${app.services.organiztion-service}")
     private String organizationServiceName;
     @Value("${app.service.organization-api}")

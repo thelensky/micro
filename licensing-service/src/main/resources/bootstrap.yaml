@@ -13,3 +13,51 @@ spring:
 
 server:
   port: 8081
+
+resilience4j:
+  circuitbreaker: # https://resilience4j.readme.io/docs/circuitbreaker v2.2.0
+    instances:
+      licenseService:
+        register-health-indicator: true
+        wait-duration-in-open-state: 20s
+        failure-rate-threshold: 60
+        sliding-window-type: TIME_BASED
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-size: 8
+        minimum-number-of-calls: 10
+        record-exceptions: # io.github.resilience4j.common.circuitbreaker.configuration.CommonCircuitBreakerConfigurationProperties.InstanceProperties.recordExceptions
+          - org.springframework.web.client.HttpServerErrorException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+      organizationService:
+        register-health-indicator: true
+        wait-duration-in-open-state: 20s
+        failure-rate-threshold: 60
+        permitted-number-of-calls-in-half-open-state: 3
+        minimum-number-of-calls: 10
+  bulkhead:
+    instances:
+      bulkheadLicenseService: # not used https://resilience4j.readme.io/docs/bulkhead v2.2.0
+        max-wait-duration: 10ms
+        max-concurrent-calls: 1
+  thread-pool-bulkhead:
+    instances:
+      bulkheadLicenseService:
+        max-thread-pool-size: 1
+        core-thread-pool-size: 1
+        queue-capacity: 2
+        keep-alive-duration: 20ms
+  retry:
+    instances:
+      retryLicenseService:
+        max-attempts: 5
+        wait-duration: 500
+        retry-exceptions: # io.github.resilience4j.common.retry.configuration.CommonRetryConfigurationProperties.InstanceProperties.retryExceptions
+          - java.util.concurrent.TimeoutException
+
+  ratelimiter:
+    instances:
+      rateLimiterLicenseService:
+        limit-for-period: 5
+        timeout-duration: 1000ms
+        limit-refresh-period: 5000ms
