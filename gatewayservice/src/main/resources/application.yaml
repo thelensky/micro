@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: gateway-service
+  cloud:
+    config:
+      uri: http://localhost:8071
+      fail-fast: true
+      retry:
+        initial-interval: 1000   # 1 секунда
+        max-interval: 2000
+        multiplier: 1.5
+        max-attempts: 10
+server:
+  port: 8072
+
+management:
+  endpoint:
+    gateway:
+      access: unrestricted
+
+  endpoints:
+    web:
+      exposure:
+        include: gateway

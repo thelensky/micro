@@ -47,7 +47,6 @@ services:
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
       - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
@@ -62,13 +61,12 @@ services:
 
   organization-service:
     image: organization:0.0.1-SNAPSHOT
-#    ports:
-#      - "8082"
+    ports:
+      - "8082:8082"
 #      - "5006:5006"
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - SPRING_CLOUD_CONFIG_URI=http://config-server:8071
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
       - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 #-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
     networks:
@@ -80,6 +78,23 @@ services:
         condition: service_started
       db:
         condition: service_started
+
+  gateway-service:
+    image: gatewayservice:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+    restart: on-failure
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071
+    depends_on:
+      config-server:
+        condition: service_started
+      eureka-server:
+        condition: service_started
+    networks:
+      - backend
 
 networks:
   backend:
