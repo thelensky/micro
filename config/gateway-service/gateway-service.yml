@@ -1,0 +1,57 @@
+spring:
+  cloud:
+    config:
+      retry:
+        initial-interval: 1000   # 1 секунда
+        max-interval: 2000
+        multiplier: 1.5
+        max-attempts: 10
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: organization-service
+              uri: lb://organization-service
+              predicates:
+                - Path=/organization/**
+              filters:
+                - RewritePath=/organization/(?<path>.*), /$\{path}
+          discovery:
+            locator:
+              enabled: true
+
+# Implemetn in java config styled: com.optimagrowth.gatewayservice.conf.ConfigGateway
+#            - id: licensing-service
+#              uri: lb://licensing-service
+#              predicates:
+#                - Path=/license/**
+#              filters:
+#                - RewritePath=/license/(?<path>.*), /$\{path}
+
+
+
+eureka:
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.name}:${server.port}
+    status-page-url-path: /actuator/info
+    home-page-url-path: /
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://eureka-server:8070/eureka/
+
+server:
+  port: 8072
+
+
+management:
+  endpoint:
+    gateway:
+      access: read-only
+  endpoints:
+    web:
+      exposure:
+        include: gateway

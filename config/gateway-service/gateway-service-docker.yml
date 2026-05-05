@@ -1,0 +1,11 @@
+eureka:
+  instance:
+    hostname: ${HOSTNAME}
+
+
+server:
+  port: 8072
+
+logging:
+  level:
+    root: DEBUG
