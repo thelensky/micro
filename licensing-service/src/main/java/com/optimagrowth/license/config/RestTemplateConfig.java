@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+
 @Component
 public class RestTemplateConfig {
     @Bean

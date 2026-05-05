@@ -63,12 +63,12 @@ services:
     image: organization:0.0.1-SNAPSHOT
     ports:
       - "8082:8082"
-#      - "5006:5006"
+      - "5006:5006"
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
-      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 #-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5006
     networks:
       - backend
     depends_on:
@@ -83,11 +83,12 @@ services:
     image: gatewayservice:0.0.1-SNAPSHOT
     ports:
       - "8072:8072"
+      - "5007:5007"
     restart: on-failure
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8071
-      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071
+      - JAVA_OPTS=-Dspring.cloud.config.uri=http://config-server:8071 -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5007
     depends_on:
       config-server:
         condition: service_started

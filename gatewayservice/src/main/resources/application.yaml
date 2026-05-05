@@ -10,6 +10,20 @@ spring:
         max-interval: 2000
         multiplier: 1.5
         max-attempts: 10
+    gateway:
+      server:
+        webflux:
+
+          routes:
+            - id: organization-service
+              uri: lb://organization-service
+              predicates:
+                - Path=/organization/**
+              filters:
+                - RewritePath=/organization/(?<path>.*), /$\{path}
+          discovery:
+            locator:
+              enabled: true
 server:
   port: 8072
 
